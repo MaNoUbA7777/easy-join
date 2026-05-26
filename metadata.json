@@ -1,0 +1,6 @@
+{
+  "name": "Easy Join",
+  "description": "A web app providing a join button for a Zoom room, with a dashboard to update the current link dynamically.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
