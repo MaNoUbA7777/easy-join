@@ -5,7 +5,7 @@ import fs from "fs";
 
 // We'll store the link in-memory for this simple prototype.
 // Normally, this would be in a database.
-let currentZoomLink = "https://zoom.us/join";
+let currentZoomLink = "https://us06web.zoom.us/j/89155546746?pwd=Wl6NawamQlfUzQzIPMhGSyj1Kwv7ma.1";
 
 async function startServer() {
   const app = express();
