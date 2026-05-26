@@ -6,7 +6,6 @@ import fs from "fs";
 // We'll store the link in-memory for this simple prototype.
 // Normally, this would be in a database.
 let currentZoomLink = "https://zoom.us/join";
-const ADMIN_CODE = process.env.ADMIN_CODE || "12345";
 
 async function startServer() {
   const app = express();
@@ -19,21 +18,8 @@ async function startServer() {
     res.json({ link: currentZoomLink });
   });
 
-  app.post("/api/verify", (req, res) => {
-    const { code } = req.body;
-    if (code === ADMIN_CODE) {
-      res.json({ success: true });
-    } else {
-      res.status(401).json({ success: false, error: "Invalid admin code" });
-    }
-  });
-
   app.post("/api/zoom-link", (req, res) => {
-    const { link, code } = req.body;
-    
-    if (code !== ADMIN_CODE) {
-      return res.status(401).json({ error: "Unauthorized: Invalid code" });
-    }
+    const { link } = req.body;
 
     if (typeof link === "string") {
       currentZoomLink = link;

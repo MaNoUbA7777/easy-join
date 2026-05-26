@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Settings, Save, CheckCircle2, AlertCircle, ArrowLeft, Link as LinkIcon, Lock, Key } from "lucide-react";
+import { Settings, Save, CheckCircle2, AlertCircle, ArrowLeft, Link as LinkIcon } from "lucide-react";
 import { motion } from "motion/react";
 
 export default function Dashboard() {
@@ -10,12 +10,6 @@ export default function Dashboard() {
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
-  
-  // Auth state
-  const [isAuth, setIsAuth] = useState(false);
-  const [pinCode, setPinCode] = useState("");
-  const [verifying, setVerifying] = useState(false);
-  const [authError, setAuthError] = useState("");
 
   useEffect(() => {
     fetch("/api/zoom-link")
@@ -53,7 +47,7 @@ export default function Dashboard() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ link: newLink, code: pinCode }),
+        body: JSON.stringify({ link: newLink }),
       });
 
       const data = await response.json();
@@ -72,88 +66,6 @@ export default function Dashboard() {
       setSaving(false);
     }
   };
-
-  const handleVerify = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!pinCode.trim()) return;
-    
-    setVerifying(true);
-    setAuthError("");
-    
-    try {
-      const response = await fetch("/api/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: pinCode }),
-      });
-      const data = await response.json();
-      if (data.success) {
-        setIsAuth(true);
-      } else {
-        setAuthError(data.error || "Invalid code");
-        setPinCode("");
-      }
-    } catch (err) {
-      setAuthError("Failed to verify code");
-    } finally {
-      setVerifying(false);
-    }
-  };
-
-  if (!isAuth) {
-    return (
-      <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col items-center justify-center p-4">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="max-w-md w-full bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 flex flex-col overflow-hidden"
-        >
-          <div className="h-32 bg-slate-900 p-8 flex flex-col justify-end gap-2">
-            <h1 className="text-white text-2xl font-semibold flex items-center gap-2">
-              <Lock className="w-5 h-5 text-slate-400" /> Secure Area
-            </h1>
-          </div>
-          
-          <form onSubmit={handleVerify} className="p-8 flex flex-col gap-6">
-            <div className="space-y-1">
-              <p className="text-slate-600 font-medium">Authentication Required</p>
-              <p className="text-slate-400 text-sm">Please enter the admin code to access the dashboard.</p>
-            </div>
-            
-            <div className="space-y-2">
-              <div className="relative">
-                <Key className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
-                <input
-                  type="password"
-                  placeholder="Enter code..."
-                  value={pinCode}
-                  onChange={(e) => setPinCode(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-xl font-mono text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/20 transition-all placeholder:text-slate-400"
-                  required
-                  autoFocus
-                />
-              </div>
-              {authError && <p className="text-red-500 text-sm mt-2 ml-1">{authError}</p>}
-            </div>
-            
-            <button
-              type="submit"
-              disabled={verifying || !pinCode.trim()}
-              className="w-full py-4 bg-slate-900 hover:bg-black text-white font-bold rounded-2xl transition-all shadow-lg flex justify-center items-center gap-2 disabled:opacity-50"
-            >
-              {verifying ? "Verifying..." : "Unlock Dashboard"}
-            </button>
-            
-            <div className="w-full pt-6 border-t border-slate-100 flex justify-center">
-              <Link to="/" className="text-sm font-medium text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-1">
-                <ArrowLeft className="w-4 h-4" /> Back to Home
-              </Link>
-            </div>
-          </form>
-        </motion.div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col items-center justify-center p-4">
